@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="theme-color" content="#0f3d3a" />
+<title>مختبر المصحّح — تجربة</title>
+<link rel="icon" href="../icons/icon-192.png" />
+<style>
+  :root {
+    --paper: #f3f0e7; --surface: #fffdf8; --surface-2: #ece7da; --ink: #142b29; --muted: #566662; --line: #d9d1bf;
+    --teal: #0f3d3a; --teal-2: #1b6a60; --on-teal: #f3eedf; --gold: #b88d2e; --gold-ink: #80600f; --gold-hi: #e6c46a;
+    --ok: #2d7a4c; --ok-bg: #e3f0e6; --bad: #a9443b; --bad-bg: #f6e3e0; --warn: #8a6410; --warn-bg: #f5ecd3; --band: #d8ead9;
+    --f-body: 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
+    --f-quran: 'Amiri Quran', 'KFGQPC Uthmanic Script HAFS', 'Amiri', 'Noto Naskh Arabic', serif;
+    color-scheme: light dark;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --paper: #0b1716; --surface: #122321; --surface-2: #19302d; --ink: #ebe5d6; --muted: #9db0ab; --line: #2a403c;
+      --teal: #0a2a28; --teal-2: #6cc0b2; --on-teal: #efe8d6; --gold: #d2a94a; --gold-ink: #d2a94a; --gold-hi: #f0d283;
+      --ok: #7fd1a0; --ok-bg: #173327; --bad: #f0a097; --bad-bg: #3a1f1c; --warn: #f0d283; --warn-bg: #33290f; --band: #1d3a2c; }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--f-body); font-size: 16px; line-height: 1.6; }
+  header { background: var(--teal); color: var(--on-teal); border-bottom: 2px solid var(--gold); padding: 14px 16px 12px; padding-top: max(14px, env(safe-area-inset-top)); }
+  header h1 { margin: 0; font-size: 1.25rem; font-weight: 700; }
+  header p { margin: 2px 0 0; font-size: 0.85rem; opacity: 0.85; }
+  main { max-width: 720px; margin: 0 auto; padding: 14px 14px 80px; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px; margin-bottom: 14px; }
+  .card h2 { margin: 0 0 8px; font-size: 1.05rem; }
+  .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  label.f { display: flex; flex-direction: column; gap: 4px; font-size: 0.85rem; color: var(--muted); flex: 1 1 140px; }
+  select, input[type=number] { font: inherit; font-size: 1rem; padding: 10px; border-radius: 10px; border: 1.5px solid var(--line); background: var(--surface); color: var(--ink); min-height: 46px; }
+  button { font: inherit; font-size: 1rem; min-height: 46px; padding: 8px 16px; border-radius: 12px; border: 0; cursor: pointer; }
+  .primary { background: var(--teal-2); color: var(--surface); font-weight: 700; }
+  .ghost { background: var(--surface); border: 1.5px solid var(--line); color: var(--ink); }
+  .rec { background: #b23b32; color: #fff; font-weight: 700; }
+  button:disabled { opacity: 0.5; cursor: default; }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+  .chip { min-height: 36px; padding: 4px 12px; border-radius: 999px; background: var(--surface-2); color: var(--ink); font-size: 0.85rem; }
+  .ayah { font-family: var(--f-quran); font-size: 1.6rem; line-height: 2.3; margin: 10px 0 4px; text-align: justify; }
+  .ayah .w { border-radius: 6px; padding: 0 1px; }
+  .ayah .w.m { background: var(--warn-bg); }
+  .ayah .w.ok { background: var(--ok-bg); }
+  .ayah .w.bad { background: var(--bad-bg); }
+  .muted { color: var(--muted); font-size: 0.85rem; }
+  .status { margin-top: 10px; font-size: 0.9rem; }
+  progress { width: 100%; height: 10px; }
+  .res { list-style: none; padding: 0; margin: 0; }
+  .res li { border-top: 1px solid var(--line); padding: 12px 0; }
+  .res li:first-child { border-top: 0; }
+  .res .top { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+  .res .word { font-family: var(--f-quran); font-size: 1.45rem; }
+  .res .kind { font-size: 0.85rem; color: var(--muted); }
+  .verdict { font-weight: 700; font-size: 0.95rem; padding: 2px 10px; border-radius: 999px; }
+  .verdict.ok { background: var(--ok-bg); color: var(--ok); }
+  .verdict.bad { background: var(--bad-bg); color: var(--bad); }
+  .verdict.warn { background: var(--warn-bg); color: var(--warn); }
+  .bar { position: relative; height: 26px; margin: 8px 0 2px; background: var(--surface-2); border-radius: 6px; overflow: hidden; }
+  .bar .band { position: absolute; top: 0; bottom: 0; background: var(--band); }
+  .bar .me { position: absolute; top: 4px; height: 18px; right: 0; background: var(--teal-2); border-radius: 4px; }
+  .bar .hus { position: absolute; top: 0; bottom: 0; width: 3px; background: var(--gold); }
+  .legend { display: flex; gap: 14px; font-size: 0.78rem; color: var(--muted); flex-wrap: wrap; }
+  .legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: -2px; margin-inline-end: 4px; }
+  .nums { font-size: 0.82rem; color: var(--muted); }
+  .acts { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+  .acts button { min-height: 38px; padding: 4px 12px; font-size: 0.85rem; }
+  .judge.on-ok { background: var(--ok-bg); color: var(--ok); border-color: var(--ok); }
+  .judge.on-bad { background: var(--bad-bg); color: var(--bad); border-color: var(--bad); }
+  .note { background: var(--warn-bg); border-radius: 10px; padding: 10px 12px; font-size: 0.88rem; margin-top: 10px; }
+  details summary { cursor: pointer; font-weight: 700; }
+  .hide { display: none !important; }
+  textarea { width: 100%; min-height: 70px; font: inherit; padding: 8px; border-radius: 10px; border: 1.5px solid var(--line); background: var(--surface); color: var(--ink); }
+</style>
+  <script type="module" crossorigin src="./assets/index-BY9bmYWZ.js"></script>
+</head>
+<body>
+<header>
+  <h1>مختبر المصحّح — تجربة للشيخ</h1>
+  <p>يقيس طول المدود والغنن في قراءتك، ويقارنها بتلاوة الشيخ الحصري (حفص عن عاصم).</p>
+</header>
+<main>
+  <section class="card">
+    <h2>١. اختر الآية</h2>
+    <div class="row">
+      <label class="f">السورة<select id="sura"></select></label>
+      <label class="f" style="flex:0 1 110px">الآية<input id="ayah" type="number" min="1" value="1" inputmode="numeric" /></label>
+    </div>
+    <div class="chips" id="quick"></div>
+    <div class="ayah" id="text" aria-live="polite"></div>
+    <div class="row">
+      <button class="ghost" id="playR">▶︎ اسمع الحصري (المرتل)</button>
+      <button class="ghost" id="playM">▶︎ المصحف المعلم</button>
+    </div>
+    <audio id="aud" preload="none"></audio>
+  </section>
+
+  <section class="card">
+    <h2>٢. اقرأ الآية</h2>
+    <p class="muted">اقرأ الآية كاملة من أولها، في مكان هادئ، والهاتف قريب منك. يمكنك أيضاً رفع ملف صوتي (مثل رسالة واتساب).</p>
+    <div class="row">
+      <button class="rec" id="recBtn">● ابدأ التسجيل</button>
+      <label class="ghost" style="display:inline-flex;align-items:center;min-height:46px;padding:8px 16px;border-radius:12px;border:1.5px solid var(--line);cursor:pointer">
+        رفع ملف<input id="file" type="file" accept="audio/*,video/*,.ogg,.opus,.m4a,.mp3,.wav,.aac" class="hide" />
+      </label>
+      <span id="timer" class="muted"></span>
+    </div>
+    <div class="status" id="status"></div>
+    <progress id="prog" class="hide" max="1" value="0"></progress>
+  </section>
+
+  <section class="card hide" id="resCard">
+    <h2>٣. النتيجة</h2>
+    <div id="summary"></div>
+    <div class="legend">
+      <span><i style="background:var(--teal-2)"></i>طول قراءتك</span>
+      <span><i style="background:var(--gold)"></i>الحصري في الموضع نفسه</span>
+      <span><i style="background:var(--band)"></i>المقدار المقبول</span>
+    </div>
+    <ul class="res" id="res"></ul>
+    <div class="note">
+      <b>رأي الشيخ يهمّنا:</b> اضغط «الحكم صحيح» أو «الحكم خطأ» تحت كل موضع، ثم أرسل النتيجة. بهذا نضبط المصحّح على أذن الشيخ.
+      <textarea id="comment" placeholder="ملاحظة الشيخ (اختياري)"></textarea>
+      <div class="acts">
+        <button class="primary" id="share">أرسل النتيجة عبر واتساب</button>
+        <button class="ghost" id="copy">انسخ النتيجة</button>
+        <button class="ghost" id="playMe">▶︎ اسمع تسجيلك</button>
+      </div>
+    </div>
+  </section>
+
+  <details class="card">
+    <summary>ما الذي يقيسه، وما الذي لا يقيسه؟</summary>
+    <ul>
+      <li>يقيس <b>طول المدود</b>: الطبيعي، والمنفصل، والمتصل، والعارض، واللازم.</li>
+      <li>ويقيس <b>طول الغنة</b> في المشدد والإدغام والإخفاء والإقلاب.</li>
+      <li>يحكم بالنسبة إلى سرعتك أنت: طول مدّك الطبيعي هو «المسطرة».</li>
+      <li>لا يحكم بعدُ على المخارج والصفات، ولا على مواضع الوقف والابتداء.</li>
+      <li>المقادير المقبولة تجريبية، أُخذت من قياس تلاوة الحصري في المصحف كله، وتُعدَّل برأي الشيخ.</li>
+      <li>الصوت لا يخرج من جهازك: كل القياس يجري على الهاتف نفسه.</li>
+    </ul>
+    <p class="muted" id="ver"></p>
+  </details>
+</main>
+</body>
+</html>

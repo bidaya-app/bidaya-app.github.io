@@ -13,8 +13,12 @@ self.addEventListener('activate', (e) =>
       .then(() => self.clients.claim()),
   ),
 );
+// يحفظ الصفحة الرئيسية للتطبيق وحدها: صفحات أخرى على الموقع نفسه (مثل /lab/) لا تمرّ من هنا، فلا تحلّ محلّ التطبيق.
+const ROOT = new URL('./', self.registration.scope).pathname;
 self.addEventListener('fetch', (e) => {
   if (e.request.mode !== 'navigate') return;
+  const path = new URL(e.request.url).pathname;
+  if (path !== ROOT && path !== ROOT + 'index.html') return;
   e.respondWith(
     fetch(e.request)
       .then((r) => {
